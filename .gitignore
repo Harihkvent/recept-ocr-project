@@ -1,0 +1,46 @@
+
+# Python
+venv/
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+*.env
+.env
+.env.local
+.env.*.local
+
+# OS
+.DS_Store
+Thumbs.db
+
+# IDEs
+.vscode/
+.idea/
+*.sublime-project
+*.sublime-workspace
+
+# Node / Expo
+node_modules/
+.expo/
+.expo-shared/
+web-build/
+
+# Mobile
+mobile/node_modules/
+mobile/.expo/
+mobile/.expo-shared/
+
+# Logs
+*.log
+
+# Database files
+*.db
+*.sqlite3
+
+# Distribution / packaging
+dist/
+build/
+
+# Ignore local Mongo data (if any)
+data/
