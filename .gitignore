@@ -9,7 +9,11 @@ __pycache__/
 .env
 .env.local
 .env.*.local
-
+backend/.env
+backend/.env.local
+backend/.venv
+backend/__pycache__/
+backend/*.pyc
 # OS
 .DS_Store
 Thumbs.db
