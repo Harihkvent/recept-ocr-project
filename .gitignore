@@ -1,50 +1,93 @@
 
-# Python
-venv/
+# Python Backend
 __pycache__/
-*.pyc
-*.pyo
-*.pyd
-*.env
+*.py[cod]
+backend/__pycache__/
+backend/*.py[cod]
+dist/
+build/
+*.egg-info/
+*.so
+venv/
+.venv/
+backend/venv/
+backend/.venv/
+pip-log.txt
+
+# Environment Variables
 .env
 .env.local
 .env.*.local
+*.env
 backend/.env
 backend/.env.local
-backend/.venv
-backend/__pycache__/
-backend/*.pyc
-# OS
-.DS_Store
-Thumbs.db
+backend/.env.*.local
 
-# IDEs
-.vscode/
+# Node/Expo Mobile
+node_modules/
+.expo/
+.expo-shared/
+dist/
+web-build/
+npm-debug.*
+yarn-debug.*
+yarn-error.*
+mobile/node_modules/
+mobile/.expo/
+mobile/.expo-shared/
+*.jks
+*.p8
+*.p12
+*.key
+*.mobileprovision
+*.orig.*
+*.tsbuildinfo
+.metro-health-check*
+
+# IDE
+.vscode/*
+!.vscode/settings.json
+!.vscode/tasks.json
+!.vscode/launch.json
+!.vscode/extensions.json
 .idea/
 *.sublime-project
 *.sublime-workspace
 
-# Node / Expo
-node_modules/
-.expo/
-.expo-shared/
-web-build/
+# OS generated files
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
 
-# Mobile
-mobile/node_modules/
-mobile/.expo/
-mobile/.expo-shared/
-
-# Logs
-*.log
-
-# Database files
-*.db
-*.sqlite3
-
-# Distribution / packaging
-dist/
-build/
-
-# Ignore local Mongo data (if any)
+# MongoDB
 data/
+*.mongodb
+dump/
+
+# OCR and ML data
+backend/models/
+backend/uploads/
+backend/temp/
+*.traineddata
+*.pth
+
+# Logs and databases
+*.log
+*.sql
+*.sqlite
+*.sqlite3
+*.db
+
+# Media and temp files
+uploads/
+temp/
+*.jpg
+*.jpeg
+*.png
+*.gif
+!assets/**/*
+!docs/**/*
