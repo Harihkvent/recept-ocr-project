@@ -77,6 +77,21 @@ export default function DashboardScreen() {
     setSortVisible(false);
   };
 
+  const handleDelete = async (id: string) => {
+    try {
+      const response = await fetch(`${API_URL}/receipts/${id}`, {
+        method: 'DELETE',
+      });
+      if (!response.ok) throw new Error('Failed to delete receipt');
+      
+      setReceipts(prev => prev.filter(r => r.id !== id));
+      setFilteredReceipts(prev => prev.filter(r => r.id !== id));
+    } catch (err) {
+      console.error('Delete error:', err);
+      alert('Failed to delete receipt');
+    }
+  };
+
   const renderReceiptCard = ({ item }: { item: Receipt }) => (
     <Card 
       style={[
@@ -87,7 +102,19 @@ export default function DashboardScreen() {
       onPress={() => router.push({ pathname: '/receipt/[id]', params: { id: item.id } })}
     >
       <Card.Content style={styles.cardContent}>
-        <ThemedText type="subtitle" style={styles.merchantText}>{item.merchant}</ThemedText>
+        <ThemedView style={styles.cardHeaderRow}>
+          <ThemedText type="subtitle" style={styles.merchantText}>{item.merchant}</ThemedText>
+          <IconButton 
+            icon="delete-outline" 
+            iconColor={Colors[colorScheme ?? 'light'].error} 
+            size={20}
+            onPress={(e) => {
+              // Prevent card press when clicking delete
+              e.stopPropagation();
+              handleDelete(item.id);
+            }} 
+          />
+        </ThemedView>
         <ThemedText type="title" style={styles.totalText}>
           ₹{typeof item.total === 'number' ? item.total.toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) : item.total}
         </ThemedText>
@@ -126,11 +153,23 @@ export default function DashboardScreen() {
         </Menu>
       </ThemedView>
 
+      <ThemedView style={styles.summaryContainer}>
+        <Card style={[styles.summaryCard, { backgroundColor: isDark ? '#1E1E1E' : '#E3F2FD' }]}>
+          <Card.Content>
+            <ThemedText style={styles.summaryLabel}>Total Spending</ThemedText>
+            <ThemedText type="title" style={styles.summaryValue}>
+              ₹{receipts.reduce((acc, curr) => acc + (typeof curr.total === 'number' ? curr.total : 0), 0).toLocaleString('en-IN', { minimumFractionDigits: 2 })}
+            </ThemedText>
+            <ThemedText style={styles.summarySubtext}>{receipts.length} Receipts Processed</ThemedText>
+          </Card.Content>
+        </Card>
+      </ThemedView>
+
       <Searchbar
         placeholder="Search receipts..."
         onChangeText={setSearchQuery}
         value={searchQuery}
-        style={styles.searchBar}
+        style={[styles.searchBar, { backgroundColor: isDark ? '#333' : '#fff' }]}
       />
 
       {loading ? (
@@ -182,21 +221,45 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     padding: 16,
+    paddingTop: 60,
   },
   title: {
-    fontSize: 24,
+    fontSize: 28,
     fontWeight: 'bold',
   },
   header: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    marginBottom: 10,
+    marginBottom: 20,
+  },
+  summaryContainer: {
+    marginBottom: 20,
+  },
+  summaryCard: {
+    borderRadius: 16,
+    elevation: 0,
+  },
+  summaryLabel: {
+    fontSize: 14,
+    opacity: 0.7,
+    marginBottom: 4,
+  },
+  summaryValue: {
+    fontSize: 32,
+    fontWeight: 'bold',
+    marginBottom: 4,
+  },
+  summarySubtext: {
+    fontSize: 12,
+    opacity: 0.6,
   },
   searchBar: {
-    marginBottom: 16,
-    elevation: 2,
-    backgroundColor: 'rgba(0,0,0,0.02)',
+    marginBottom: 20,
+    borderRadius: 12,
+    elevation: 0,
+    borderWidth: 1,
+    borderColor: 'rgba(0,0,0,0.05)',
   },
   card: {
     marginBottom: 12,
@@ -209,6 +272,13 @@ const styles = StyleSheet.create({
   },
   cardContent: {
     padding: 16,
+  },
+  cardHeaderRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginBottom: 8,
+    backgroundColor: 'transparent',
   },
   list: {
     flex: 1,

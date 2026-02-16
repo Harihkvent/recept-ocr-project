@@ -15,6 +15,13 @@ export default function TabLayout() {
         tabBarActiveTintColor: Colors[colorScheme ?? 'light'].tint,
         headerShown: false,
         tabBarButton: HapticTab,
+        tabBarStyle: {
+          backgroundColor: colorScheme === 'dark' ? '#121212' : '#ffffff',
+          borderTopWidth: 0,
+          elevation: 10,
+          height: 60,
+          paddingBottom: 8,
+        }
       }}>
       <Tabs.Screen
         name="index"
@@ -33,8 +40,22 @@ export default function TabLayout() {
       <Tabs.Screen
         name="dashboard"
         options={{
-          title: 'Dashboard',
+          title: 'Activity',
           tabBarIcon: ({ color }) => <IconSymbol size={28} name="list.bullet" color={color} />,
+        }}
+      />
+      <Tabs.Screen
+        name="analytics"
+        options={{
+          title: 'Stats',
+          tabBarIcon: ({ color }) => <IconSymbol size={28} name="chart.bar.fill" color={color} />,
+        }}
+      />
+      <Tabs.Screen
+        name="settings"
+        options={{
+          title: 'Settings',
+          tabBarIcon: ({ color }) => <IconSymbol size={28} name="gearshape.fill" color={color} />,
         }}
       />
     </Tabs>

@@ -102,8 +102,7 @@ export default function UploadScreen() {
 
       const pickerResult = await ImagePicker.launchImageLibraryAsync({
         mediaTypes: ImagePicker.MediaTypeOptions.Images,
-        allowsEditing: true,
-        aspect: [4, 3],
+        allowsEditing: false, // Changed from true to allow full image analysis
         quality: 1,
       });
 

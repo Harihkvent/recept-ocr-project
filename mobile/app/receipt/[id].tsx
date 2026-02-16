@@ -50,6 +50,20 @@ export default function ReceiptDetailScreen() {
     );
   }
 
+  const handleDelete = async () => {
+    try {
+      const response = await fetch(`${API_URL}/receipts/${id}`, {
+        method: 'DELETE',
+      });
+      if (!response.ok) throw new Error('Failed to delete');
+      alert('Receipt deleted successfully');
+      router.replace('/dashboard');
+    } catch (err) {
+      console.error(err);
+      alert('Error deleting receipt');
+    }
+  };
+
   return (
     <ScrollView style={[styles.container, { backgroundColor: isDark ? '#121212' : '#f5f5f5' }]}>
       <ThemedView style={styles.content}>
@@ -73,15 +87,26 @@ export default function ReceiptDetailScreen() {
           </Card.Content>
         </Card>
 
-        <Button 
-          mode="contained" 
-          buttonColor={isDark ? '#333' : '#6200ee'}
-          textColor="#fff"
-          onPress={() => router.back()} 
-          style={styles.backButton}
-        >
-          Back to Dashboard
-        </Button>
+        <ThemedView style={styles.buttonContainer}>
+          <Button 
+            mode="contained" 
+            buttonColor={isDark ? '#333' : '#6200ee'}
+            textColor="#fff"
+            onPress={() => router.back()} 
+            style={styles.actionButton}
+          >
+            Back
+          </Button>
+          
+          <Button 
+            mode="outlined" 
+            onPress={handleDelete}
+            style={[styles.actionButton, styles.deleteButton]}
+            textColor={Colors[colorScheme ?? 'light'].error}
+          >
+            Delete
+          </Button>
+        </ThemedView>
       </ThemedView>
     </ScrollView>
   );
@@ -132,10 +157,19 @@ const styles = StyleSheet.create({
     lineHeight: 22,
     fontFamily: Platform.OS === 'ios' ? 'Courier' : 'monospace',
   },
-  backButton: {
+  buttonContainer: {
+    flexDirection: 'row',
     width: '100%',
+    gap: 12,
     marginTop: 16,
+    backgroundColor: 'transparent',
+  },
+  actionButton: {
+    flex: 1,
     borderRadius: 8,
     paddingVertical: 4,
+  },
+  deleteButton: {
+    borderColor: '#ff5252',
   },
 });
