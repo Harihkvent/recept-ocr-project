@@ -1,13 +1,11 @@
 import React from 'react';
 import { StyleSheet, Image } from 'react-native';
-import { Button } from 'react-native-paper';
+import { TextInput, Card, Button } from 'react-native-paper';
 import * as ImagePicker from 'expo-image-picker';
 import { API_URL } from '@/constants/Config';
 
 import { ThemedText } from '@/components/themed-text';
 import { ThemedView } from '@/components/themed-view';
-
-import { TextInput, Card } from 'react-native-paper';
 
 export default function UploadScreen() {
   const [image, setImage] = React.useState<string | null>(null);
@@ -175,7 +173,7 @@ export default function UploadScreen() {
                 style={styles.input}
               />
               <TextInput
-                label="Total Amount"
+                label="Total Amount (₹)"
                 value={String(editingFields?.total)}
                 onChangeText={(text) => updateField('total', text)}
                 keyboardType="numeric"

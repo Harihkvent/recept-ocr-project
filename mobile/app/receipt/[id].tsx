@@ -1,5 +1,5 @@
 import React from 'react';
-import { StyleSheet, ScrollView, ActivityIndicator } from 'react-native';
+import { StyleSheet, ScrollView, ActivityIndicator, Platform } from 'react-native';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { Card, Button, Divider } from 'react-native-paper';
 import { API_URL } from '@/constants/Config';
@@ -51,25 +51,32 @@ export default function ReceiptDetailScreen() {
   }
 
   return (
-    <ScrollView style={styles.container}>
+    <ScrollView style={[styles.container, { backgroundColor: isDark ? '#121212' : '#f5f5f5' }]}>
       <ThemedView style={styles.content}>
         <ThemedText type="title" style={styles.merchant}>{receipt.fields.merchant}</ThemedText>
         <ThemedText type="subtitle" style={styles.total}>
-          ${typeof receipt.fields.total === 'number' ? receipt.fields.total.toFixed(2) : receipt.fields.total}
+          ₹{typeof receipt.fields.total === 'number' ? receipt.fields.total.toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) : receipt.fields.total}
         </ThemedText>
         <ThemedText style={styles.date}>{receipt.fields.date}</ThemedText>
         
         <Divider style={styles.divider} />
         
-        <Card style={styles.card}>
-          <Card.Title title="Raw OCR Text" />
+        <Card style={[styles.card, { backgroundColor: isDark ? '#1e1e1e' : '#ffffff' }]} elevation={2}>
+          <Card.Title 
+            title="Raw OCR Text" 
+            titleStyle={{ color: isDark ? '#fff' : '#000' }}
+          />
           <Card.Content>
-            <ThemedText style={styles.ocrText}>{receipt.ocr_text}</ThemedText>
+            <ThemedText style={[styles.ocrText, { color: isDark ? '#ccc' : '#444' }]}>
+              {receipt.ocr_text}
+            </ThemedText>
           </Card.Content>
         </Card>
 
         <Button 
-          mode="outlined" 
+          mode="contained" 
+          buttonColor={isDark ? '#333' : '#6200ee'}
+          textColor="#fff"
           onPress={() => router.back()} 
           style={styles.backButton}
         >
@@ -85,7 +92,7 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   content: {
-    padding: 20,
+    padding: 24,
     alignItems: 'center',
   },
   center: {
@@ -94,36 +101,41 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   merchant: {
-    fontSize: 28,
+    fontSize: 32,
     fontWeight: 'bold',
     marginBottom: 8,
+    textAlign: 'center',
   },
   total: {
-    fontSize: 32,
+    fontSize: 40,
     fontWeight: 'bold',
     color: '#4CAF50',
     marginBottom: 4,
   },
   date: {
-    fontSize: 16,
-    opacity: 0.7,
-    marginBottom: 20,
+    fontSize: 18,
+    opacity: 0.6,
+    marginBottom: 24,
   },
   divider: {
     width: '100%',
-    marginVertical: 20,
+    marginVertical: 24,
+    height: 1,
   },
   card: {
     width: '100%',
-    marginBottom: 20,
+    marginBottom: 24,
+    borderRadius: 12,
   },
   ocrText: {
-    fontSize: 14,
-    lineHeight: 20,
-    fontFamily: 'monospace',
+    fontSize: 15,
+    lineHeight: 22,
+    fontFamily: Platform.OS === 'ios' ? 'Courier' : 'monospace',
   },
   backButton: {
     width: '100%',
-    marginTop: 10,
+    marginTop: 16,
+    borderRadius: 8,
+    paddingVertical: 4,
   },
 });

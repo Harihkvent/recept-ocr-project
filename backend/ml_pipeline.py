@@ -38,6 +38,7 @@ def run_ner(ocr_text):
     lines = [l.strip() for l in ocr_text.splitlines() if l.strip()]
     if not merchant and lines:
         merchant = lines[0]
+    
     date = None
     date_patterns = [
         r"\b(\d{1,2}[/-]\d{1,2}[/-]\d{2,4})\b",
@@ -51,24 +52,53 @@ def run_ner(ocr_text):
             break
     if not date:
         date = next((ent.text for ent in doc.ents if ent.label_ == "DATE"), "Unknown")
+    
     total = None
     total_candidates = []
+    
+    # Priority keywords for total amount
+    amount_keywords = ["total", "amount", "fees", "subtotal", "amt", "payable"]
+    
     for line in lines:
-        if "total" in line.lower():
-            nums = re.findall(r"\d+[\.,]?\d*", line)
-            if nums:
-                try:
-                    total = float(nums[-1].replace(",", "").replace(".", "."))
-                except Exception:
-                    pass
-        nums = re.findall(r"\d+[\.,]?\d*", line)
+        line_lower = line.lower()
+        # Look for numbers in the line
+        # This regex matches numbers like 11,000.00 or 1000.00 or 1000
+        nums = re.findall(r"(\d+(?:[.,]\d+)+)", line)
+        if not nums:
+            nums = re.findall(r"(\d+)", line)
+            
         for n in nums:
             try:
-                total_candidates.append(float(n.replace(",", "").replace(".", ".")))
+                # Clean up comma/period usage for float conversion
+                clean_n = n.replace(",", "")
+                # If there are multiple dots, it might be an OCR error (e.g. 11.000.00 instead of 11,000.00)
+                if clean_n.count('.') > 1:
+                    parts = clean_n.split('.')
+                    clean_n = "".join(parts[:-1]) + "." + parts[-1]
+                
+                val = float(clean_n)
+                
+                # Check if this line has a keyword
+                has_keyword = any(kw in line_lower for kw in amount_keywords)
+                
+                if has_keyword:
+                    # If line has keyword, it's a very strong candidate
+                    total_candidates.append((val, True))
+                else:
+                    # Otherwise, it's just a candidate, but filter out likely years/dates
+                    if 1900 < val < 2100: # Likely a year
+                        continue
+                    if val > 0.1: # Avoid very small numbers
+                        total_candidates.append((val, False))
             except Exception:
                 pass
-    if total is None and total_candidates:
-        total = max(total_candidates)
+                
+    if total_candidates:
+        # Sort: priority to keyword lines, then by value (usually total is highest)
+        total_candidates.sort(key=lambda x: (x[1], x[0]), reverse=True)
+        total = total_candidates[0][0]
+        
     if total is None:
         total = "Unknown"
+        
     return {"merchant": merchant or "Unknown", "date": date, "total": total}

@@ -89,7 +89,7 @@ export default function DashboardScreen() {
       <Card.Content style={styles.cardContent}>
         <ThemedText type="subtitle" style={styles.merchantText}>{item.merchant}</ThemedText>
         <ThemedText type="title" style={styles.totalText}>
-          ${typeof item.total === 'number' ? item.total.toFixed(2) : item.total}
+          ₹{typeof item.total === 'number' ? item.total.toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) : item.total}
         </ThemedText>
         <ThemedText style={styles.dateText}>{item.date}</ThemedText>
         <ThemedText 
