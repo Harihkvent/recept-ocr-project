@@ -34,6 +34,7 @@ A mobile application for scanning and processing receipts using OCR, built with 
 3. Install dependencies:
    ```powershell
    pip install -r requirements.txt
+   python -m spacy download en_core_web_sm
    ```
 
 4. Ensure MongoDB is running on your system
@@ -85,8 +86,9 @@ A mobile application for scanning and processing receipts using OCR, built with 
 ## Configuration
 
 ### Backend
-- MongoDB connection URL can be modified in `backend/main.py`
-- Default port: 8000
+- **Environment Variables**:
+  - `MONGO_URL`: Connection string for MongoDB (default: `mongodb://localhost:27017`)
+- The backend uses FastAPI on port 8000.
 
 ### Mobile
 - API URL is configured to use host machine's IP (default: http://10.46.5.252:8000)

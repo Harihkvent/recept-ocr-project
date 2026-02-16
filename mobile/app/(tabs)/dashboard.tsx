@@ -1,8 +1,10 @@
 import React from 'react';
 import { StyleSheet, FlatList, ActivityIndicator, RefreshControl } from 'react-native';
-import { Card, Button, useTheme } from 'react-native-paper';
+import { Card, Button, Searchbar, Menu, IconButton } from 'react-native-paper';
+import { useRouter } from 'expo-router';
 import { Colors } from '@/constants/theme';
 import { useColorScheme } from '@/hooks/use-color-scheme';
+import { API_URL } from '@/constants/Config';
 
 import { ThemedText } from '@/components/themed-text';
 import { ThemedView } from '@/components/themed-view';
@@ -17,10 +19,13 @@ type Receipt = {
 };
 
 export default function DashboardScreen() {
+  const router = useRouter();
   const [receipts, setReceipts] = React.useState<Receipt[]>([]);
+  const [filteredReceipts, setFilteredReceipts] = React.useState<Receipt[]>([]);
+  const [searchQuery, setSearchQuery] = React.useState('');
   const [loading, setLoading] = React.useState(true);
   const [error, setError] = React.useState<string | null>(null);
-  const theme = useTheme();
+  const [sortVisible, setSortVisible] = React.useState(false);
   const colorScheme = useColorScheme();
   const isDark = colorScheme === 'dark';
 
@@ -28,7 +33,7 @@ export default function DashboardScreen() {
     try {
       setLoading(true);
       setError(null);
-      const response = await fetch('http://10.46.5.252:8000/receipts');
+      const response = await fetch(`${API_URL}/receipts`);
       if (!response.ok) {
         throw new Error('Failed to fetch receipts');
       }
@@ -41,6 +46,7 @@ export default function DashboardScreen() {
         ocr_text: r.ocr_text
       }));
       setReceipts(formattedReceipts);
+      setFilteredReceipts(formattedReceipts);
     } catch (err) {
       console.error('Error fetching receipts:', err);
       setError(err instanceof Error ? err.message : 'Failed to fetch receipts');
@@ -53,6 +59,24 @@ export default function DashboardScreen() {
     fetchReceipts();
   }, []);
 
+  React.useEffect(() => {
+    const filtered = receipts.filter(r => 
+      r.merchant.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      r.ocr_text.toLowerCase().includes(searchQuery.toLowerCase())
+    );
+    setFilteredReceipts(filtered);
+  }, [searchQuery, receipts]);
+
+  const handleSort = (type: 'date' | 'total' | 'merchant') => {
+    const sorted = [...filteredReceipts].sort((a, b) => {
+      if (type === 'total') return Number(b.total) - Number(a.total);
+      if (type === 'date') return new Date(b.date).getTime() - new Date(a.date).getTime();
+      return a.merchant.localeCompare(b.merchant);
+    });
+    setFilteredReceipts(sorted);
+    setSortVisible(false);
+  };
+
   const renderReceiptCard = ({ item }: { item: Receipt }) => (
     <Card 
       style={[
@@ -60,6 +84,7 @@ export default function DashboardScreen() {
         { backgroundColor: isDark ? Colors.dark.cardBackground : Colors.light.cardBackground }
       ]}
       mode="elevated"
+      onPress={() => router.push({ pathname: '/receipt/[id]', params: { id: item.id } })}
     >
       <Card.Content style={styles.cardContent}>
         <ThemedText type="subtitle" style={styles.merchantText}>{item.merchant}</ThemedText>
@@ -82,7 +107,32 @@ export default function DashboardScreen() {
 
   return (
     <ThemedView style={styles.container}>
-      <ThemedText type="title" style={styles.title}>Dashboard</ThemedText>
+      <ThemedView style={styles.header}>
+        <ThemedText type="title" style={styles.title}>Dashboard</ThemedText>
+        <Menu
+          visible={sortVisible}
+          onDismiss={() => setSortVisible(false)}
+          anchor={
+            <IconButton 
+              icon="sort" 
+              onPress={() => setSortVisible(true)}
+              iconColor={Colors[colorScheme ?? 'light'].tint}
+            />
+          }
+        >
+          <Menu.Item onPress={() => handleSort('date')} title="Sort by Date" />
+          <Menu.Item onPress={() => handleSort('total')} title="Sort by Amount" />
+          <Menu.Item onPress={() => handleSort('merchant')} title="Sort by Merchant" />
+        </Menu>
+      </ThemedView>
+
+      <Searchbar
+        placeholder="Search receipts..."
+        onChangeText={setSearchQuery}
+        value={searchQuery}
+        style={styles.searchBar}
+      />
+
       {loading ? (
         <ThemedView style={styles.centerContent}>
           <ActivityIndicator 
@@ -109,9 +159,9 @@ export default function DashboardScreen() {
             Retry
           </Button>
         </ThemedView>
-      ) : receipts.length > 0 ? (
+      ) : filteredReceipts.length > 0 ? (
         <FlatList
-          data={receipts}
+          data={filteredReceipts}
           renderItem={renderReceiptCard}
           keyExtractor={(item) => item.id}
           style={styles.list}
@@ -134,9 +184,19 @@ const styles = StyleSheet.create({
     padding: 16,
   },
   title: {
-    marginBottom: 20,
     fontSize: 24,
     fontWeight: 'bold',
+  },
+  header: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginBottom: 10,
+  },
+  searchBar: {
+    marginBottom: 16,
+    elevation: 2,
+    backgroundColor: 'rgba(0,0,0,0.02)',
   },
   card: {
     marginBottom: 12,
