@@ -185,7 +185,7 @@ export default function HomeScreen() {
               No receipts yet
             </ThemedText>
             <ThemedText style={[styles.emptySubtext, { color: colors.textMuted }]}>
-              Tap &quot;Scan Receipt&quot; to get started
+              {'Tap "Scan Receipt" to get started'}
             </ThemedText>
           </Surface>
         )}
