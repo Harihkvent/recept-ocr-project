@@ -1,5 +1,5 @@
 import React from 'react';
-import { StyleSheet, Image, ScrollView, View, Dimensions } from 'react-native';
+import { StyleSheet, Image, ScrollView, View } from 'react-native';
 import { TextInput, Card, Button, IconButton, Surface, ProgressBar, Chip } from 'react-native-paper';
 import * as ImagePicker from 'expo-image-picker';
 import { API_URL } from '@/constants/Config';
@@ -7,8 +7,6 @@ import { Colors } from '@/constants/theme';
 import { useColorScheme } from '@/hooks/use-color-scheme';
 
 import { ThemedText } from '@/components/themed-text';
-
-const { width } = Dimensions.get('window');
 
 const CATEGORIES = ['Groceries', 'Dining', 'Shopping', 'Transport', 'Utilities', 'Healthcare', 'Entertainment', 'Other'];
 
@@ -410,7 +408,7 @@ const styles = StyleSheet.create({
   },
   image: {
     width: '100%',
-    height: width * 0.8,
+    aspectRatio: 3 / 4,
     borderRadius: 16,
   },
   imageActions: {

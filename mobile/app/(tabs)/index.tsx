@@ -1,5 +1,5 @@
 import React, { useState, useCallback } from 'react';
-import { StyleSheet, ScrollView, View, Dimensions, RefreshControl } from 'react-native';
+import { StyleSheet, ScrollView, View, RefreshControl } from 'react-native';
 import { Button, Card, IconButton, Surface } from 'react-native-paper';
 import { useRouter } from 'expo-router';
 import { useFocusEffect } from '@react-navigation/native';
@@ -8,8 +8,6 @@ import { ThemedText } from '@/components/themed-text';
 import { Colors } from '@/constants/theme';
 import { useColorScheme } from '@/hooks/use-color-scheme';
 import { API_URL } from '@/constants/Config';
-
-const { width } = Dimensions.get('window');
 
 type ReceiptSummary = {
   totalSpending: number;
@@ -292,7 +290,7 @@ const styles = StyleSheet.create({
     gap: 12,
   },
   actionCard: {
-    width: (width - 52) / 2,
+    width: '48%',
     borderRadius: 16,
     overflow: 'hidden',
   },
